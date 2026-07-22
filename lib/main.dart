@@ -1,23 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:rocket_slice/app/router/app_router.dart';
 import 'package:rocket_slice/app/theme/app_theme.dart';
+import 'package:rocket_slice/core/services/theme_provider.dart';
+import 'package:rocket_slice/features/home/services/pizza_provider.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive Flutter
+  await Hive.initFlutter();
+
+  await Hive.openBox('settings_box');
+
+  runApp(const RocketSliceApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class RocketSliceApp extends StatelessWidget {
+  const RocketSliceApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Rocket Slice',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      routerConfig: AppRouter.router,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => PizzaProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp.router(
+            title: 'Rocket Slice',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            routerConfig: AppRouter.router,
+          );
+        },
+      ),
     );
   }
 }
