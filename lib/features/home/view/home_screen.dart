@@ -1,9 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:rocket_slice/app/router/route_names.dart';
 import 'package:rocket_slice/app/theme/app_theme.dart';
 import 'package:rocket_slice/core/services/theme_provider.dart';
-import 'package:rocket_slice/features/home/model/pizza.dart';
+import 'package:rocket_slice/core/widgets/app_bottom_nav_bar.dart';
+import 'package:rocket_slice/features/cart/services/cart_provider.dart';
+import 'package:rocket_slice/features/favourite/services/favorites_provider.dart';
 import 'package:rocket_slice/features/home/services/pizza_provider.dart';
+import 'package:rocket_slice/features/home/widgets/build_pizza_card.dart';
+import 'package:rocket_slice/features/home/widgets/categories_selector.dart';
+import 'package:rocket_slice/features/home/widgets/promotional_banner.dart';
+import 'package:rocket_slice/features/profile/services/profile_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,6 +23,9 @@ class HomeScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
     final pizzaProvider = Provider.of<PizzaProvider>(context);
+    final cartProvider = Provider.of<CartProvider>(context);
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
+    final profileProvider = Provider.of<ProfileProvider>(context);
 
     final filteredPizzas = pizzaProvider.filteredPizzas;
 
@@ -21,26 +34,88 @@ class HomeScreen extends StatelessWidget {
         leading: Builder(
           builder: (drawerContext) => IconButton(
             icon: const Icon(Icons.menu_rounded, size: 28),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldWithBottomNavBar.rootScaffoldKey.currentState
+                  ?.openDrawer();
+            },
             tooltip: 'Open Menu',
           ),
         ),
-        title: Column(
-          children: [
-            Text(
-              'Rocket Slice',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.0,
-                color: isDark
-                    ? AppTheme.darkTextSecondary
-                    : AppTheme.lightTextSecondary,
+        title: GestureDetector(
+          onTap: () {
+            context.pushNamed(RouteNames.profile);
+          },
+          child: Column(
+            children: [
+              Text(
+                'DELIVER TO',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                  color: isDark
+                      ? AppTheme.darkTextSecondary
+                      : AppTheme.lightTextSecondary,
+                ),
+              ),
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.location_on_rounded,
+                      size: 14,
+                      color: AppTheme.primaryColor,
+                    ),
+                    SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        profileProvider.deliveryAddress,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(
+              right: 12.0,
+            ), // Add spacing from edge
+            child: GestureDetector(
+              onTap: () {
+                context.goNamed(RouteNames.profile);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: CircleAvatar(
+                  radius: 20, // Adjust if you want smaller (e.g., 20)
+                  backgroundColor: AppTheme.secondaryColor,
+                  backgroundImage: profileProvider.profileImagePath != null
+                      ? FileImage(File(profileProvider.profileImagePath!))
+                      : null,
+                  child: profileProvider.profileImagePath == null
+                      ? Text(
+                          profileProvider.selectedAvatarEmoji,
+                          style: const TextStyle(fontSize: 28),
+                        )
+                      : null,
+                ),
               ),
             ),
-          ],
-        ),
-        actions: [],
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 20),
@@ -109,119 +184,10 @@ class HomeScreen extends StatelessWidget {
             ),
 
             // Promotional Special Banner
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      AppTheme.primaryColor,
-                      AppTheme.primaryGradientEnd,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.35),
-                      blurRadius: 15,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppTheme.secondaryColor,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text(
-                              'SPECIAL PROMO',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            '50% OFF FIRST ORDER',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Use code: ROCKET50 at checkout',
-                            style: TextStyle(
-                              color: Color(0xE6FFFFFF),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white24,
-                      ),
-                      child: const Text('🍕', style: TextStyle(fontSize: 42)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            PromotionalBanner(),
 
             // Categories Selector
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                'Categories',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(
-              height: 44,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: pizzaProvider.categories.length,
-                itemBuilder: (context, index) {
-                  final category = pizzaProvider.categories[index];
-                  final isSelected = category == pizzaProvider.selectedCategory;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(category),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        if (selected) {
-                          pizzaProvider.selectCategory(category);
-                        }
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
+            CategoriesSelector(pizzaProvider: pizzaProvider),
 
             // Pizza Catalog Section Header & Sorting Info
             Padding(
@@ -305,13 +271,43 @@ class HomeScreen extends StatelessWidget {
                 itemCount: filteredPizzas.length,
                 itemBuilder: (context, index) {
                   final pizza = filteredPizzas[index];
+                  final isFav = favoritesProvider.isFavorite(pizza.id);
 
-                  return _buildPizzaCard(
-                    context,
+                  return BuildPizzaCard(
+                    context: context,
                     pizza: pizza,
-                    onFavoriteToggle: () {},
-                    onTap: () {},
-                    onQuickAdd: () {},
+                    isFavorite: isFav,
+                    onFavoriteToggle: () {
+                      favoritesProvider.toggleFavorite(pizza.id);
+                    },
+                    onTap: () {
+                      context.pushNamed(
+                        RouteNames.productDetails,
+                        pathParameters: {'id': pizza.id},
+                      );
+                    },
+                    onQuickAdd: () {
+                      cartProvider.addToCart(
+                        pizza: pizza,
+                        size: 'Medium',
+                        crust: 'Thin Crust',
+                        toppings: [],
+                      );
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Added ${pizza.name} (Medium) to cart! 🍕',
+                          ),
+                          duration: const Duration(seconds: 2),
+                          action: SnackBarAction(
+                            label: 'VIEW CART',
+                            textColor: Theme.of(context).colorScheme.primary,
+                            onPressed: () => context.goNamed(RouteNames.cart),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -334,174 +330,6 @@ class HomeScreen extends StatelessWidget {
       case SortOption.defaultSort:
         return 'Sort & Filter ⚙️';
     }
-  }
-
-  Widget _buildPizzaCard(
-    BuildContext context, {
-    required Pizza pizza,
-    required VoidCallback onFavoriteToggle,
-    required VoidCallback onTap,
-    required VoidCallback onQuickAdd,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image with Badges
-            Expanded(
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.network(
-                      pizza.imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: isDark
-                              ? AppTheme.darkCard
-                              : AppTheme.lightCard,
-                          child: const Center(
-                            child: Text('🍕', style: TextStyle(fontSize: 40)),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  // Favorite Toggle Button
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.black.withValues(alpha: 0.5),
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: Icon(Icons.favorite_border_rounded, size: 18),
-                        onPressed: onFavoriteToggle,
-                      ),
-                    ),
-                  ),
-                  // Spicy / Popular Badge
-                  if (pizza.isSpicy || pizza.isPopular)
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: pizza.isSpicy
-                              ? AppTheme.accentSpicy
-                              : AppTheme.secondaryColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          pizza.isSpicy ? '🔥 SPICY' : '⭐ TOP',
-                          style: TextStyle(
-                            color: pizza.isSpicy ? Colors.white : Colors.black,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-
-            // Card Body Details
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    pizza.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Rating & Prep Time
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.star_rounded,
-                        size: 14,
-                        color: AppTheme.secondaryColor,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        '${pizza.rating}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '• ${pizza.prepTimeMinutes} mins',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: isDark
-                              ? AppTheme.darkTextSecondary
-                              : AppTheme.lightTextSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Price & Quick Add Button
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '\$${pizza.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: AppTheme.primaryColor,
-                        ),
-                      ),
-                      Container(
-                        height: 32,
-                        width: 32,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(
-                            Icons.add_rounded,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          onPressed: onQuickAdd,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   void _showFilterBottomSheet(
