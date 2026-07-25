@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(seconds: 1),
     );
 
     _scaleAnimation = Tween<double>(
@@ -36,7 +36,11 @@ class _SplashScreenState extends State<SplashScreen>
       end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
-    _controller.forward();
+    _controller.forward().then((_) {
+      if (mounted) {
+        context.goNamed(RouteNames.home);
+      }
+    });
   }
 
   @override
@@ -51,164 +55,132 @@ class _SplashScreenState extends State<SplashScreen>
     final isDark = themeProvider.isDarkMode;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: const Alignment(0, -0.2),
-              radius: 1.2,
-              colors: isDark
-                  ? [const Color(0xFF331C14), AppTheme.darkBackground]
-                  : [const Color(0xFFFFF3E0), AppTheme.lightBackground],
-            ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: const Alignment(0, -0.2),
+            radius: 1.2,
+            colors: isDark
+                ? [const Color(0xFF331C14), AppTheme.darkBackground]
+                : [const Color(0xFFFFF3E0), AppTheme.lightBackground],
           ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Theme toggle at the top, aligned to the right
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          isDark
-                              ? Icons.light_mode_rounded
-                              : Icons.dark_mode_rounded,
-                          color: isDark
-                              ? AppTheme.secondaryColor
-                              : AppTheme.primaryColor,
-                          size: 28,
-                        ),
-                        onPressed: () {
-                          themeProvider.toggleTheme();
-                        },
-                        tooltip: 'Toggle Light/Dark Theme',
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  // Branding content
-                  ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: Container(
-                      padding: const EdgeInsets.all(28),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppTheme.primaryColor,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.5),
-                            blurRadius: 30,
-                            spreadRadius: 8,
-                          ),
-                        ],
-                      ),
-                      child: const Text('🍕', style: TextStyle(fontSize: 72)),
-                    ),
-                  ),
-                  const SizedBox(height: 36),
-                  FadeTransition(
-                    opacity: _fadeAnimation,
+        ),
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                // Clamping prevents overscroll glow, feels more native
+                physics: const ClampingScrollPhysics(),
+                child: ConstrainedBox(
+                  // Force the child to be at least as tall as the viewport
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
-                            style: TextStyle(
-                              fontSize: 34,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.5,
-                              color: isDark
-                                  ? Colors.white
-                                  : AppTheme.lightTextPrimary,
+                        // Branding – animated logo
+                        ScaleTransition(
+                          scale: _scaleAnimation,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppTheme.primaryColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.primaryColor.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                  blurRadius: 30,
+                                  spreadRadius: 8,
+                                ),
+                              ],
                             ),
-                            children: const [
-                              TextSpan(text: 'ROCKET '),
-                              TextSpan(
-                                text: 'SLICE',
-                                style: TextStyle(color: AppTheme.primaryColor),
+
+                            child: Image.asset(
+                              'assets/icon/ic_launcher_monochrome.png',
+                              width: 200,
+                              height: 200,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 36),
+                        // Text content – fades in
+                        FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Column(
+                            children: [
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  style: TextStyle(
+                                    fontSize: 34,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.5,
+                                    color: isDark
+                                        ? Colors.white
+                                        : AppTheme.lightTextPrimary,
+                                  ),
+                                  children: const [
+                                    TextSpan(text: 'ROCKET '),
+                                    TextSpan(
+                                      text: 'SLICE',
+                                      style: TextStyle(
+                                        color: AppTheme.primaryColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : AppTheme.primaryColor.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Text(
+                                  '🔥 FAST & HOT PIZZA DELIVERY 🚀',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primaryColor,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Handcrafted gourmet pizzas delivered straight to your galaxy in 20 minutes or less.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  height: 1.5,
+                                  color: isDark
+                                      ? AppTheme.darkTextSecondary
+                                      : AppTheme.lightTextSecondary,
+                                ),
                               ),
                             ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.08)
-                                : AppTheme.primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            '🔥 FAST & HOT PIZZA DELIVERY 🚀',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryColor,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Handcrafted gourmet pizzas delivered straight to your galaxy in 20 minutes or less.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            height: 1.5,
-                            color: isDark
-                                ? AppTheme.darkTextSecondary
-                                : AppTheme.lightTextSecondary,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 60),
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                        ),
-                        onPressed: () {
-                          context.goNamed(RouteNames.home);
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'GET STARTED',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward_rounded, size: 20),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),
