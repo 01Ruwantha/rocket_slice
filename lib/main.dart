@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:rocket_slice/app/router/app_router.dart';
@@ -10,8 +11,8 @@ import 'package:rocket_slice/features/home/services/pizza_provider.dart';
 import 'package:rocket_slice/features/profile/services/profile_provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // Initialize Hive Flutter
   await Hive.initFlutter();
 
@@ -20,6 +21,9 @@ void main() async {
   await Hive.openBox('cart_box');
   await Hive.openBox('favorites_box');
   await Hive.openBox('settings_box');
+
+  // Remove splash screen after initialization
+  FlutterNativeSplash.remove();
 
   runApp(const RocketSliceApp());
 }

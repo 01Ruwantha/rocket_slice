@@ -48,6 +48,9 @@ dependencies:
   # Image Picker
   image_picker: ^1.2.3
 
+  # Splash Screen
+  flutter_native_splash: ^2.4.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -70,9 +73,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/icon/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -99,3 +102,25 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/icon/icon.png
+  branding: assets/images/branding.png
+  color_dark: "#000000"
+  image_dark: assets/icon/icon.png
+  branding_dark: assets/images/branding.png
+  branding_mode: bottom
+  branding_bottom_padding: 24
+
+  android_12:
+    image: assets/icon/icon.png
+    color: "#ffffff"
+    color_dark: "#000000"
+    image_dark: assets/icon/icon.png
+    branding: assets/images/branding.png
+    branding_dark: assets/images/branding.png
+    branding_mode: bottom
+    branding_bottom_padding: 24
+
+  web: false
