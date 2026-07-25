@@ -15,6 +15,10 @@ void main() async {
   // Initialize Hive Flutter
   await Hive.initFlutter();
 
+  // Open Hive Boxes for persistent data
+  await Hive.openBox('profile_box');
+  await Hive.openBox('cart_box');
+  await Hive.openBox('favorites_box');
   await Hive.openBox('settings_box');
 
   runApp(const RocketSliceApp());
