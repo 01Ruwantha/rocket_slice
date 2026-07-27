@@ -12,6 +12,7 @@ import 'package:rocket_slice/features/favourite/services/favorites_provider.dart
 import 'package:rocket_slice/features/home/services/pizza_provider.dart';
 import 'package:rocket_slice/features/home/widgets/build_pizza_card.dart';
 import 'package:rocket_slice/features/home/widgets/categories_selector.dart';
+import 'package:rocket_slice/features/home/widgets/pizza_card_skeleton.dart';
 import 'package:rocket_slice/features/home/widgets/promotional_banner.dart';
 import 'package:rocket_slice/features/profile/services/profile_provider.dart';
 
@@ -117,201 +118,222 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Search & Filter Bar
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      onChanged: (value) => pizzaProvider.setSearchQuery(value),
-                      decoration: InputDecoration(
-                        hintText: 'Search crispy pizzas, toppings...',
-                        prefixIcon: const Icon(Icons.search_rounded),
-                        suffixIcon: pizzaProvider.searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear_rounded),
-                                onPressed: () =>
-                                    pizzaProvider.setSearchQuery(''),
-                              )
-                            : null,
+      body: RefreshIndicator(
+        onRefresh: () => pizzaProvider.refreshPizzas(),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Search & Filter Bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        onChanged: (value) =>
+                            pizzaProvider.setSearchQuery(value),
+                        decoration: InputDecoration(
+                          hintText: 'Search crispy pizzas, toppings...',
+                          prefixIcon: const Icon(Icons.search_rounded),
+                          suffixIcon: pizzaProvider.searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear_rounded),
+                                  onPressed: () =>
+                                      pizzaProvider.setSearchQuery(''),
+                                )
+                              : null,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Stack(
-                    children: [
-                      Container(
-                        height: 52,
-                        width: 52,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.tune_rounded,
-                            color: Colors.white,
+                    const SizedBox(width: 10),
+                    Stack(
+                      children: [
+                        Container(
+                          height: 52,
+                          width: 52,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor,
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                          onPressed: () {
-                            _showFilterBottomSheet(context, pizzaProvider);
-                          },
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.tune_rounded,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              _showFilterBottomSheet(context, pizzaProvider);
+                            },
+                          ),
                         ),
-                      ),
-                      if (pizzaProvider.currentSort != SortOption.defaultSort ||
-                          pizzaProvider.isSpicyOnly)
-                        Positioned(
-                          right: 4,
-                          top: 4,
-                          child: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: const BoxDecoration(
-                              color: AppTheme.secondaryColor,
-                              shape: BoxShape.circle,
+                        if (pizzaProvider.currentSort !=
+                                SortOption.defaultSort ||
+                            pizzaProvider.isSpicyOnly)
+                          Positioned(
+                            right: 4,
+                            top: 4,
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: const BoxDecoration(
+                                color: AppTheme.secondaryColor,
+                                shape: BoxShape.circle,
+                              ),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Promotional Special Banner
-            PromotionalBanner(),
-
-            // Categories Selector
-            CategoriesSelector(pizzaProvider: pizzaProvider),
-
-            // Pizza Catalog Section Header & Sorting Info
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${pizzaProvider.selectedCategory} Pizzas (${filteredPizzas.length})',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      ],
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _showFilterBottomSheet(context, pizzaProvider),
-                    child: Text(
-                      _getSortLabel(pizzaProvider.currentSort),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            // Empty state if search or filter returns zero items
-            if (filteredPizzas.isEmpty)
+              // Promotional Special Banner
+              PromotionalBanner(),
+
+              // Categories Selector
+              CategoriesSelector(pizzaProvider: pizzaProvider),
+
+              // Pizza Catalog Section Header & Sorting Info
               Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: Center(
-                  child: Column(
-                    children: [
-                      const Text('🔍', style: TextStyle(fontSize: 48)),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No pizzas match your filter criteria',
-                        style: TextStyle(
-                          fontSize: 16,
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${pizzaProvider.selectedCategory} Pizzas (${filteredPizzas.length})',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () =>
+                          _showFilterBottomSheet(context, pizzaProvider),
+                      child: Text(
+                        _getSortLabel(pizzaProvider.currentSort),
+                        style: const TextStyle(
+                          fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? AppTheme.darkTextPrimary
-                              : AppTheme.lightTextPrimary,
+                          color: AppTheme.primaryColor,
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Try clearing search query or changing active category filter.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: isDark
-                              ? AppTheme.darkTextSecondary
-                              : AppTheme.lightTextSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => pizzaProvider.resetFilters(),
-                        child: const Text('RESET ALL FILTERS'),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              )
-            else
-              // Grid of Pizzas
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.68,
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 14,
-                ),
-                itemCount: filteredPizzas.length,
-                itemBuilder: (context, index) {
-                  final pizza = filteredPizzas[index];
-                  final isFav = favoritesProvider.isFavorite(pizza.id);
-
-                  return BuildPizzaCard(
-                    context: context,
-                    pizza: pizza,
-                    isFavorite: isFav,
-                    onFavoriteToggle: () {
-                      favoritesProvider.toggleFavorite(pizza.id);
-                    },
-                    onTap: () {
-                      context.pushNamed(
-                        RouteNames.productDetails,
-                        pathParameters: {'id': pizza.id},
-                      );
-                    },
-                    onQuickAdd: () {
-                      cartProvider.addToCart(
-                        pizza: pizza,
-                        size: 'Medium',
-                        crust: 'Thin Crust',
-                        toppings: [],
-                      );
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Added ${pizza.name} (Medium) to cart! 🍕',
-                          ),
-                          duration: const Duration(seconds: 2),
-                          action: SnackBarAction(
-                            label: 'VIEW CART',
-                            textColor: Theme.of(context).colorScheme.primary,
-                            onPressed: () => context.goNamed(RouteNames.cart),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
               ),
-          ],
+              // Grid of Pizzas or Skeletons
+              if (pizzaProvider.isLoading)
+                // Show skeleton grid
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.68,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                  ),
+                  itemCount: 8, // number of skeletons
+                  itemBuilder: (context, index) => const PizzaCardSkeleton(),
+                )
+              // Empty state if search or filter returns zero items
+              else if (filteredPizzas.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(40.0),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        const Text('🔍', style: TextStyle(fontSize: 48)),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No pizzas match your filter criteria',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isDark
+                                ? AppTheme.darkTextPrimary
+                                : AppTheme.lightTextPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Try clearing search query or changing active category filter.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDark
+                                ? AppTheme.darkTextSecondary
+                                : AppTheme.lightTextSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => pizzaProvider.resetFilters(),
+                          child: const Text('RESET ALL FILTERS'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                // Grid of Pizzas
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.68,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                  ),
+                  itemCount: filteredPizzas.length,
+                  itemBuilder: (context, index) {
+                    final pizza = filteredPizzas[index];
+                    final isFav = favoritesProvider.isFavorite(pizza.id);
+
+                    return BuildPizzaCard(
+                      context: context,
+                      pizza: pizza,
+                      isFavorite: isFav,
+                      onFavoriteToggle: () {
+                        favoritesProvider.toggleFavorite(pizza.id);
+                      },
+                      onTap: () {
+                        context.pushNamed(
+                          RouteNames.productDetails,
+                          pathParameters: {'id': pizza.id},
+                        );
+                      },
+                      onQuickAdd: () {
+                        cartProvider.addToCart(
+                          pizza: pizza,
+                          size: 'Medium',
+                          crust: 'Thin Crust',
+                          toppings: [],
+                        );
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Added ${pizza.name} (Medium) to cart! 🍕',
+                            ),
+                            duration: const Duration(seconds: 2),
+                            action: SnackBarAction(
+                              label: 'VIEW CART',
+                              textColor: Theme.of(context).colorScheme.primary,
+                              onPressed: () => context.goNamed(RouteNames.cart),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );
