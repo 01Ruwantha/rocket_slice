@@ -4,6 +4,38 @@ import 'package:rocket_slice/features/home/model/pizza.dart';
 enum SortOption { defaultSort, popular, rating, priceLowToHigh, priceHighToLow }
 
 class PizzaProvider extends ChangeNotifier {
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
+
+  // In the constructor, start loading simulation
+  PizzaProvider() {
+    _simulateLoading();
+  }
+
+  void _simulateLoading() async {
+    // Simulate network delay (e.g., 2 seconds)
+    await Future.delayed(const Duration(seconds: 2));
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> refreshPizzas() async {
+    // If already loading, skip to avoid multiple refreshes
+    if (_isLoading) return;
+
+    _isLoading = true;
+    notifyListeners();
+
+    // Simulate network delay (replace with actual API call)
+    await Future.delayed(const Duration(seconds: 2));
+
+    // If you have a real data source, re‑fetch your pizzas here.
+    // For static data, we just keep the same list.
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
   String _selectedCategory = 'All';
   String _searchQuery = '';
   SortOption _currentSort = SortOption.defaultSort;
