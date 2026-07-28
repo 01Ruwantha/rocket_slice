@@ -1,23 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:rocket_slice/app/router/app_router.dart';
 import 'package:rocket_slice/app/theme/app_theme.dart';
+import 'package:rocket_slice/core/services/theme_provider.dart';
+import 'package:rocket_slice/features/cart/services/cart_provider.dart';
+import 'package:rocket_slice/features/favourite/services/favorites_provider.dart';
+import 'package:rocket_slice/features/home/services/pizza_provider.dart';
+import 'package:rocket_slice/features/home/services/promo_provider.dart';
+import 'package:rocket_slice/features/profile/services/profile_provider.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  // Initialize Hive Flutter
+  await Hive.initFlutter();
+
+  // Open Hive Boxes for persistent data
+  await Hive.openBox('profile_box');
+  await Hive.openBox('cart_box');
+  await Hive.openBox('favorites_box');
+  await Hive.openBox('settings_box');
+
+  // Remove splash screen after initialization
+  FlutterNativeSplash.remove();
+
+  runApp(const RocketSliceApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class RocketSliceApp extends StatelessWidget {
+  const RocketSliceApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Rocket Slice',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      routerConfig: AppRouter.router,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => PizzaProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => PromoProvider()..fetchPromos()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp.router(
+            title: 'Rocket Slice',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            routerConfig: AppRouter.router,
+          );
+        },
+      ),
     );
   }
 }
