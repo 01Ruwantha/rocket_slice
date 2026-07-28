@@ -13,39 +13,64 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+    with TickerProviderStateMixin {
+  // ✅ Correct mixin for multiple controllers
+  late AnimationController _textController;
+  late Animation<double> _titleFade;
+  late Animation<double> _taglineFade;
+  late Animation<double> _descFade;
+
+  late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+
+    // -------- Text animations (run once) --------
+    _textController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 4),
     );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.6,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    _titleFade = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _textController,
+        curve: Interval(0.1, 0.4, curve: Curves.easeOut),
+      ),
+    );
+    _taglineFade = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _textController,
+        curve: Interval(0.4, 0.7, curve: Curves.easeOut),
+      ),
+    );
+    _descFade = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _textController,
+        curve: Interval(0.7, 1.0, curve: Curves.easeOut),
+      ),
+    );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
-
-    _controller.forward().then((_) {
-      if (mounted) {
-        context.goNamed(RouteNames.home);
-      }
+    _textController.forward().then((_) {
+      if (mounted) context.goNamed(RouteNames.home);
     });
+
+    // -------- Scale animation (continuous loop) --------
+    _scaleController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
+    );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _textController.dispose();
+    _scaleController.dispose();
     super.dispose();
   }
 
@@ -71,10 +96,8 @@ class _SplashScreenState extends State<SplashScreen>
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                // Clamping prevents overscroll glow, feels more native
                 physics: const ClampingScrollPhysics(),
                 child: ConstrainedBox(
-                  // Force the child to be at least as tall as the viewport
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
@@ -82,7 +105,6 @@ class _SplashScreenState extends State<SplashScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Branding – animated logo
                         ScaleTransition(
                           scale: _scaleAnimation,
                           child: Container(
@@ -100,7 +122,6 @@ class _SplashScreenState extends State<SplashScreen>
                                 ),
                               ],
                             ),
-
                             child: Image.asset(
                               'assets/icon/ic_launcher_monochrome.png',
                               width: 200,
@@ -109,70 +130,74 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                         ),
                         const SizedBox(height: 36),
-                        // Text content – fades in
+
                         FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: Column(
-                            children: [
-                              RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  style: TextStyle(
-                                    fontSize: 34,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 1.5,
-                                    color: isDark
-                                        ? Colors.white
-                                        : AppTheme.lightTextPrimary,
-                                  ),
-                                  children: const [
-                                    TextSpan(text: 'ROCKET '),
-                                    TextSpan(
-                                      text: 'SLICE',
-                                      style: TextStyle(
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                          opacity: _titleFade,
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              style: TextStyle(
+                                fontSize: 34,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.5,
+                                color: isDark
+                                    ? Colors.white
+                                    : AppTheme.lightTextPrimary,
                               ),
-                              const SizedBox(height: 12),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.08)
-                                      : AppTheme.primaryColor.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: const Text(
-                                  '🔥 FAST & HOT PIZZA DELIVERY 🚀',
+                              children: const [
+                                TextSpan(text: 'ROCKET '),
+                                TextSpan(
+                                  text: 'SLICE',
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
                                     color: AppTheme.primaryColor,
-                                    letterSpacing: 1.0,
                                   ),
                                 ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        FadeTransition(
+                          opacity: _taglineFade,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.08)
+                                  : AppTheme.primaryColor.withValues(
+                                      alpha: 0.1,
+                                    ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text(
+                              '🔥 FAST & HOT PIZZA DELIVERY 🚀',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryColor,
+                                letterSpacing: 1.0,
                               ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Handcrafted gourmet pizzas delivered straight to your galaxy in 20 minutes or less.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  height: 1.5,
-                                  color: isDark
-                                      ? AppTheme.darkTextSecondary
-                                      : AppTheme.lightTextSecondary,
-                                ),
-                              ),
-                            ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        FadeTransition(
+                          opacity: _descFade,
+                          child: Text(
+                            'Handcrafted gourmet pizzas delivered straight to your galaxy in 20 minutes or less.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              height: 1.5,
+                              color: isDark
+                                  ? AppTheme.darkTextSecondary
+                                  : AppTheme.lightTextSecondary,
+                            ),
                           ),
                         ),
                       ],
