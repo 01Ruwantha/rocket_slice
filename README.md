@@ -1,4 +1,4 @@
-# <p align="center"><img src="https://github.com/01Ruwantha/rocket_slice/blob/ad551cdc2cf8f8e9bdd205339efb79bc67d592fd/assets/icon/icon.png" alt="App Logo" width="200"/></p><p align="center"><img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/assets/images/branding.png?raw=true" alt="branding png" width="400"/></p> <p align="center">Your Ultimate Pizza & Food Delivery App</p>
+# <p align="center"><img src="https://github.com/01Ruwantha/rocket_slice/blob/ad551cdc2cf8f8e9bdd205339efb79bc67d592fd/assets/icon/icon.png" alt="App Logo" width="200"/></p><p align="center"><img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/assets/images/branding.png?raw=true" alt="branding png" width="400"/></p> <p align="center">Your Ultimate Pizza Delivery App</p>
 
 A Flutter-based product catalogue and ordering application for gourmet pizzas with modern UI, persistent storage, and smooth user experience.
 
