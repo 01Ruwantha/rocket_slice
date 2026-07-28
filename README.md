@@ -1,6 +1,4 @@
-
-
-# 🚀 Rocket Slice - Product Catalogue Application
+# <p align="center"><img src="https://github.com/01Ruwantha/rocket_slice/blob/ad551cdc2cf8f8e9bdd205339efb79bc67d592fd/assets/icon/icon.png" alt="App Logo" width="200"/></p><p align="center"><img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/assets/images/branding.png?raw=true" alt="branding png" width="400"/></p> <p align="center">Your Ultimate Pizza & Food Delivery App</p>
 
 A Flutter-based product catalogue and ordering application for gourmet pizzas with modern UI, persistent storage, and smooth user experience.
 
@@ -190,7 +188,31 @@ rocket_slice/
 
 ## 📱 Screenshots
 
-*(Add screenshots here)*
+**Light Mode**
+<div align="center">
+
+| Splash Screen | Animation page | Skelton Loading | Home page | Filter bottom Sheet | Details screen |
+|-------------|-----------------|------|--------|-----------|---------|
+| <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/01.jpg?raw=true" alt="Splash Screen" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/02.jpg?raw=true" alt="Start Animation page" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/03.jpg?raw=true" alt="Skelton Loading" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/04.jpg?raw=true" alt="Home page" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/05.jpg?raw=true" alt="Filter bottom Sheet" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/06.jpg?raw=true" alt="Details screen" width="150" height="300"> |
+
+| Cart Screen | Favorite page | Profile page | Change profile pic | Edit profile info | Drawer screen |
+|-------------|-----------------|------|--------|-----------|---------|
+| <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/07.jpg?raw=true" alt="Cart Screen" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/08.jpg?raw=true" alt="Favorite page" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/09.jpg?raw=true" alt="Profile page" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/10.jpg?raw=true" alt="Change profile pic" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/11.jpg?raw=true" alt="Edit profile info" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/light_mode/12.jpg?raw=true" alt="Drawer screen" width="150" height="300"> |
+
+</div>
+
+**Dark Mode**
+<div align="center">
+
+| Splash Screen | Animation page | Skelton Loading | Home page | Filter bottom Sheet | Details screen |
+|-------------|-----------------|------|--------|-----------|---------|
+| <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/01.jpg?raw=true" alt="Splash Screen" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/02.jpg?raw=true" alt="Start Animation page" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/03.jpg?raw=true" alt="Skelton Loading" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/04.jpg?raw=true" alt="Home page" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/05.jpg?raw=true" alt="Filter bottom Sheet" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/06.jpg?raw=true" alt="Details screen" width="150" height="300"> |
+
+| Cart Screen | Favorite page | Profile page | Change profile pic | Edit profile info | Drawer screen |
+|-------------|-----------------|------|--------|-----------|---------|
+| <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/07.jpg?raw=true" alt="Cart Screen" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/08.jpg?raw=true" alt="Favorite page" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/09.jpg?raw=true" alt="Profile page" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/10.jpg?raw=true" alt="Change profile pic" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/11.jpg?raw=true" alt="Edit profile info" width="150" height="300"> | <img src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/screenshots/dark_mode/12.jpg?raw=true" alt="Drawer screen" width="150" height="300"> |
+
+</div>
 
 ---
 
@@ -198,7 +220,7 @@ rocket_slice/
 
 <p align="center">
   <img 
-  src="" 
+  src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/video/video.gif?raw=true" 
   alt="App Demo" 
   width="150" 
   height="300"
@@ -228,7 +250,7 @@ This project is developed for educational purposes. All rights reserved.
 <div align="center">
 <p align="center">
   <img 
-  src="" 
+  src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/images/post_image.png" 
   alt="Rocket Slice Post Image" 
   width="1080" 
   height="720"
