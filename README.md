@@ -220,7 +220,7 @@ rocket_slice/
 
 <p align="center">
   <img 
-  src="" 
+  src="https://github.com/01Ruwantha/rocket_slice/blob/dev/submission/video/video.gif?raw=true" 
   alt="App Demo" 
   width="150" 
   height="300"
