@@ -8,6 +8,7 @@ import 'package:rocket_slice/core/services/theme_provider.dart';
 import 'package:rocket_slice/features/cart/services/cart_provider.dart';
 import 'package:rocket_slice/features/favourite/services/favorites_provider.dart';
 import 'package:rocket_slice/features/home/services/pizza_provider.dart';
+import 'package:rocket_slice/features/home/services/promo_provider.dart';
 import 'package:rocket_slice/features/profile/services/profile_provider.dart';
 
 void main() async {
@@ -40,6 +41,7 @@ class RocketSliceApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PizzaProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => PromoProvider()..fetchPromos()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

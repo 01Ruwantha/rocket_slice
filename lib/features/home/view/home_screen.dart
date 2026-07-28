@@ -10,6 +10,7 @@ import 'package:rocket_slice/core/widgets/app_bottom_nav_bar.dart';
 import 'package:rocket_slice/features/cart/services/cart_provider.dart';
 import 'package:rocket_slice/features/favourite/services/favorites_provider.dart';
 import 'package:rocket_slice/features/home/services/pizza_provider.dart';
+import 'package:rocket_slice/features/home/services/promo_provider.dart';
 import 'package:rocket_slice/features/home/widgets/build_pizza_card.dart';
 import 'package:rocket_slice/features/home/widgets/categories_selector.dart';
 import 'package:rocket_slice/features/home/widgets/pizza_card_skeleton.dart';
@@ -24,6 +25,7 @@ class HomeScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
     final pizzaProvider = Provider.of<PizzaProvider>(context);
+    final promoProvider = Provider.of<PromoProvider>(context);
     final cartProvider = Provider.of<CartProvider>(context);
     final favoritesProvider = Provider.of<FavoritesProvider>(context);
     final profileProvider = Provider.of<ProfileProvider>(context);
@@ -119,7 +121,10 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => pizzaProvider.refreshPizzas(),
+        onRefresh: () async {
+          pizzaProvider.refreshPizzas();
+          promoProvider.refresh();
+        },
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: 20),
           child: Column(
